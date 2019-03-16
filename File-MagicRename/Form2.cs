@@ -42,5 +42,11 @@ namespace File_MagicRename
         {
             this.ParentWindow.ApplyRenameProcess();
         }
+
+        private void PreviewWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.ParentWindow.ClosePreveiw();
+            e.Cancel = true;
+        }
     }
 }

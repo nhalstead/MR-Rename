@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FileRename));
             this.selectFolder = new System.Windows.Forms.Button();
             this.previewWindowOpen = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -253,10 +254,13 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.previewWindowOpen);
             this.Controls.Add(this.selectFolder);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(580, 464);
             this.MinimumSize = new System.Drawing.Size(580, 464);
             this.Name = "FileRename";
             this.Text = "File Rename Tool";
+            this.Load += new System.EventHandler(this.FileRename_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

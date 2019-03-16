@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.fileDisplay = new System.Windows.Forms.DataGridView();
-            this.selectFolder = new System.Windows.Forms.Button();
             this.Filename = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.newName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.selectFolder = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.fileDisplay)).BeginInit();
             this.SuspendLayout();
             // 
@@ -52,16 +52,6 @@
             this.fileDisplay.Size = new System.Drawing.Size(600, 489);
             this.fileDisplay.TabIndex = 0;
             // 
-            // selectFolder
-            // 
-            this.selectFolder.Location = new System.Drawing.Point(12, 507);
-            this.selectFolder.Name = "selectFolder";
-            this.selectFolder.Size = new System.Drawing.Size(114, 42);
-            this.selectFolder.TabIndex = 2;
-            this.selectFolder.Text = "Apply Rename";
-            this.selectFolder.UseVisualStyleBackColor = true;
-            this.selectFolder.Click += new System.EventHandler(this.selectFolder_Click);
-            // 
             // Filename
             // 
             this.Filename.HeaderText = "Source Filename";
@@ -78,6 +68,16 @@
             this.newName.ReadOnly = true;
             this.newName.Width = 298;
             // 
+            // selectFolder
+            // 
+            this.selectFolder.Location = new System.Drawing.Point(12, 507);
+            this.selectFolder.Name = "selectFolder";
+            this.selectFolder.Size = new System.Drawing.Size(114, 42);
+            this.selectFolder.TabIndex = 2;
+            this.selectFolder.Text = "Apply Rename";
+            this.selectFolder.UseVisualStyleBackColor = true;
+            this.selectFolder.Click += new System.EventHandler(this.selectFolder_Click);
+            // 
             // PreviewWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -85,11 +85,14 @@
             this.ClientSize = new System.Drawing.Size(624, 561);
             this.Controls.Add(this.selectFolder);
             this.Controls.Add(this.fileDisplay);
+            this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(640, 600);
             this.MinimumSize = new System.Drawing.Size(640, 600);
             this.Name = "PreviewWindow";
+            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Preview Changes";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PreviewWindow_FormClosing);
             this.Load += new System.EventHandler(this.Preview_Load);
             ((System.ComponentModel.ISupportInitialize)(this.fileDisplay)).EndInit();
             this.ResumeLayout(false);

@@ -10,13 +10,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WK.Libraries.BetterFolderBrowserNS;
 
 namespace File_MagicRename
 {
     public partial class FileRename : Form
     {
 
-        public FolderBrowserDialog selctFolder;
+        public BetterFolderBrowser selctFolder;
         public DialogResult resultDialog;
         private PreviewWindow pre;
         private List<string> files = new List<string>();
@@ -29,7 +30,7 @@ namespace File_MagicRename
 
         private void selectFolder_Click(object sender, EventArgs e)
         {
-            this.selctFolder = new FolderBrowserDialog();
+            this.selctFolder = new BetterFolderBrowser();
             this.resultDialog = this.selctFolder.ShowDialog();
             this.dirSelected.Text = Truncate(this.getDir(), 64);
         }
@@ -200,18 +201,26 @@ namespace File_MagicRename
             }
         }
 
-        public void ApplyRenameProcess()
-        {
+        public void ClosePreveiw() {
             this.pre.Hide();
             this.pre.Dispose();
             this.pre = null;
+        }
 
+        public void ApplyRenameProcess()
+        {
+            this.ClosePreveiw();
             MessageBox.Show("Files have been Renamed. DONEEEEEE!");
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("https://regex101.com/r/E2Bazv/1");
+        }
+
+        private void FileRename_Load(object sender, EventArgs e)
+        {
+
         }
     }
 
