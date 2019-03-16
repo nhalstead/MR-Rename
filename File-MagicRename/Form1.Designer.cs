@@ -253,6 +253,8 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.previewWindowOpen);
             this.Controls.Add(this.selectFolder);
+            this.MaximumSize = new System.Drawing.Size(580, 464);
+            this.MinimumSize = new System.Drawing.Size(580, 464);
             this.Name = "FileRename";
             this.Text = "File Rename Tool";
             this.ResumeLayout(false);
