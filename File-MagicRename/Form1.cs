@@ -20,7 +20,10 @@ namespace File_MagicRename
         public BetterFolderBrowser selctFolder;
         public DialogResult resultDialog;
         private PreviewWindow pre;
+        private EventLog evt;
         private List<string> files = new List<string>();
+        public int failedToMove;
+        public List<string> errLog = new List<string>();
 
         public FileRename()
         {
@@ -30,8 +33,12 @@ namespace File_MagicRename
 
         private void selectFolder_Click(object sender, EventArgs e)
         {
+            this.errLog.Add("Open Folder Select Dialog");
             this.selctFolder = new BetterFolderBrowser();
             this.resultDialog = this.selctFolder.ShowDialog();
+
+            this.errLog.Add("Folder Selected");
+            this.errLog.Add("    " + this.getDir());
             this.dirSelected.Text = Truncate(this.getDir(), 64);
         }
 
@@ -98,6 +105,7 @@ namespace File_MagicRename
         
         public void setStatus(string stat)
         {
+            this.errLog.Add("Setting Status: " + stat);
             this.status.Text = Truncate(stat, 128);
         }
 
@@ -130,7 +138,6 @@ namespace File_MagicRename
 
         private void loadFiles()
         {
-
             this.files.Clear();
 
             SearchOption extra = SearchOption.TopDirectoryOnly;
@@ -157,12 +164,15 @@ namespace File_MagicRename
 
             foreach (string file in files.ToArray())
             {
+                // Skip if the File does not Match the Rename Input
+                Match m = Regex.Match(file, regexFind.Text);
+                if (m.Success != true) continue;
+
                 FileChanges row = new FileChanges();
 
                 row.RootDir = root + "\\";
                 row.Before = file;
                 row.BeforeName = Path.GetFileName(file);
-
                 string fileNew = Regex.Replace(row.BeforeName, this.regexFind.Text, this.outputReplacement.Text);
 
                 row.After = row.Before.Replace(row.BeforeName, "") + fileNew;
@@ -202,6 +212,7 @@ namespace File_MagicRename
         }
 
         public void ClosePreveiw() {
+            this.setStatus("Closed Preview Window");
             this.pre.Hide();
             this.pre.Dispose();
             this.pre = null;
@@ -213,22 +224,73 @@ namespace File_MagicRename
 
             foreach(FileChanges file in this.getDataList().ToArray())
             {
+
                 this.setStatus("Renaming " + file.BeforeName + " to " + file.AfterName);
-                File.Move(file.Before, file.After);
+
+                if (File.Exists(file.Before) == false)
+                {
+                    this.errLog.Add("Skip due to the File does not exist since the last file scan!");
+                    continue;
+                }
+
+                if (file.Before == file.After)
+                {
+                    this.errLog.Add("Skip due to the Names being the Same!");
+                    continue;
+                }
+
+                try
+                {
+                    // Catch for Failed to Move file.
+                    File.Move(file.Before, file.After);
+                }
+                catch (Exception e)
+                {
+                    failedToMove++;
+                    this.errLog.Add("Can not Move file, It may be in use!");
+                    this.errLog.Add("    " + file.Before);
+                }
+                
             }
             this.setStatus("Completed the Rename Process");
 
-            MessageBox.Show("Files have been Renamed. DONEEEEEE!");
+            MessageBox.Show("Files have been Renamed. Process is Done!");
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            this.setStatus("Open Regex101 Example Link");
             Process.Start("https://regex101.com/r/E2Bazv/1");
         }
 
         private void FileRename_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void openEventLog_Click(object sender, EventArgs e)
+        {
+            this.setStatus("Open Event Log Window");
+            if (this.evt != null)
+            {
+                // The window is open, Bring to Front/Top Most
+                this.evt.BringToFront();
+            }
+            else
+            {
+                // Window is Not Open, Create it and Open it.
+                this.evt = new EventLog(this);
+                this.evt.BringToFront();
+                this.evt.Show();
+            }
+        }
+
+        public void CloseEventLog()
+        {
+            this.setStatus("Closed Event Log Window");
+            this.evt.Hide();
+            this.evt.Dispose();
+            this.evt = null;
         }
     }
 

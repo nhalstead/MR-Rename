@@ -48,6 +48,7 @@
             this.includeSubDir = new System.Windows.Forms.CheckBox();
             this.status = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.openEventLog = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // selectFolder
@@ -230,11 +231,23 @@
             this.linkLabel1.Text = "Online Regex Tool";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
+            // openEventLog
+            // 
+            this.openEventLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.openEventLog.ForeColor = System.Drawing.SystemColors.Control;
+            this.openEventLog.Location = new System.Drawing.Point(548, 410);
+            this.openEventLog.Name = "openEventLog";
+            this.openEventLog.Size = new System.Drawing.Size(20, 20);
+            this.openEventLog.TabIndex = 21;
+            this.openEventLog.UseVisualStyleBackColor = true;
+            this.openEventLog.Click += new System.EventHandler(this.openEventLog_Click);
+            // 
             // FileRename
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(564, 425);
+            this.Controls.Add(this.openEventLog);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.status);
             this.Controls.Add(this.includeSubDir);
@@ -287,6 +300,7 @@
         private System.Windows.Forms.CheckBox includeSubDir;
         private System.Windows.Forms.Label status;
         private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.Button openEventLog;
     }
 }
 
