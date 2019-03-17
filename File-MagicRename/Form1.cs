@@ -210,6 +210,14 @@ namespace File_MagicRename
         public void ApplyRenameProcess()
         {
             this.ClosePreveiw();
+
+            foreach(FileChanges file in this.getDataList().ToArray())
+            {
+                this.setStatus("Renaming " + file.BeforeName + " to " + file.AfterName);
+                File.Move(file.Before, file.After);
+            }
+            this.setStatus("Completed the Rename Process");
+
             MessageBox.Show("Files have been Renamed. DONEEEEEE!");
         }
 
