@@ -19,7 +19,6 @@ namespace File_MagicRename
 
         public BetterFolderBrowser selctFolder;
         public DialogResult resultDialog;
-        private PreviewWindow pre;
         private EventLog evt;
         private List<string> files = new List<string>();
         public int failedToMove;
@@ -40,6 +39,8 @@ namespace File_MagicRename
             this.errLog.Add("Folder Selected");
             this.errLog.Add("    " + this.getDir());
             this.dirSelected.Text = Truncate(this.getDir(), 64);
+            this.loadFiles();
+            this.renderFileToTable();
         }
 
         public string getDir() {
@@ -51,16 +52,17 @@ namespace File_MagicRename
         }
 
         /**
-         * Truncate String to a set Length.
-         * This has been modified to add `...` if it was
-         *  adjusted in length.
-         * @link https://stackoverflow.com/a/2776689/5779200
+         * Truncate String to a set Length from the left side.
+         * 
          */
         public string Truncate(string value, int maxLength) {
-            if (string.IsNullOrEmpty(value)) return value;
-            string t = value.Length <= maxLength ? value : value.Substring(0, maxLength);
-            if (value.Length != t.Length) t += "...";
-            return t;
+            if (value.Length <= maxLength || string.IsNullOrEmpty(value)) return value;
+
+            // String is longer than maxLength
+            int startPosition = value.Length - maxLength;
+
+            if(startPosition >= 4) startPosition = startPosition - 3;
+            return "..." + value.Substring(startPosition, value.Length);
         }
 
         public static bool VerifyRegEx(string testPattern)
@@ -109,35 +111,9 @@ namespace File_MagicRename
             this.status.Text = Truncate(stat, 128);
         }
 
-        private void preveiwInput_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode != Keys.Enter) return;
-
-            // Check to see if the Regex is Valid.
-            if (VerifyRegEx(regexFind.Text) != true)
-            {
-                previewResult.Text = "<Invalid Regex Match>";
-                return;
-            }
-            else { previewResult.Text = ""; }
-
-            // Check to see if the Input String is Matching the Regex
-            Match m = Regex.Match(preveiwInput.Text, regexFind.Text);
-            if (m.Success != true)
-            {
-                previewResult.Text = "<No Regex Match>";
-                return;
-            }
-            else { previewResult.Text = ""; }
-
-
-            // Apply the Regex Rename Part, This is the Part 2 of the Rename
-            previewResult.Text = m.Groups.Count.ToString();
-            previewResult.Text = Regex.Replace(preveiwInput.Text, regexFind.Text, outputReplacement.Text);
-        }
-
         private void loadFiles()
         {
+            if (string.IsNullOrEmpty(this.getDir())) return;
             this.files.Clear();
 
             SearchOption extra = SearchOption.TopDirectoryOnly;
@@ -154,107 +130,56 @@ namespace File_MagicRename
             {
                 this.files.Add(file);
             }
-
         }
 
-        private List<FileChanges> getDataList()
+        private void renderFileToTable()
         {
-            List<FileChanges> t = new List<FileChanges>();
-            string root = this.getDir();
+            Dictionary<string, string> regexList = getFileRegexName();
 
-            foreach (string file in files.ToArray())
+            this.fileList.Rows.Clear();
+            foreach (string filePath in this.files)
             {
-                // Skip if the File does not Match the Rename Input
-                Match m = Regex.Match(file, regexFind.Text);
-                if (m.Success != true) continue;
+                int index = this.fileList.Rows.Add();
+                DataGridViewRow row = (DataGridViewRow)this.fileList.Rows[index];
+                row.Cells[0].Value = filePath;
+                row.Cells[1].Value = Path.GetFileName(filePath);
 
-                FileChanges row = new FileChanges();
+                // Check to see if the File Regex Has the Filename in its list and has been changed.
+                string newEntry = regexList[filePath];
+                if (string.IsNullOrEmpty(newEntry) || newEntry == filePath) continue;
 
-                row.RootDir = root + "\\";
-                row.Before = file;
-                row.BeforeName = Path.GetFileName(file);
-                string fileNew = Regex.Replace(row.BeforeName, this.regexFind.Text, this.outputReplacement.Text);
+                row.Cells[1].Style.BackColor = Color.LightGreen;
+                row.Cells[2].Style.BackColor = Color.LightGreen;
+                row.Cells[3].Style.BackColor = Color.LightGreen;
 
-                row.After = row.Before.Replace(row.BeforeName, "") + fileNew;
-                row.AfterName = fileNew;
-
-                t.Add(row);
+                row.Cells[2].Value = true;
+                row.Cells[3].Value = Path.GetFileName(newEntry);
             }
 
-            return t;
         }
 
-        private void previewWindowOpen_Click(object sender, EventArgs e)
+        private Dictionary<string, string> getFileRegexName()
         {
-            if (this.getDir() == "")
+            Dictionary<string, string> changes = new Dictionary<string, string>();
+
+            foreach (string filePath in this.files)
             {
-                this.setStatus("Please Select a Directory");
-                return;
-            }
+                string filename = Path.GetFileName(filePath);
 
-            // Populate the Database of File Names and Paths for Processing
-            this.loadFiles();
-
-            if(this.pre != null)
-            {
-                // The window is open, Bring to Front/Top Most
-                this.pre.BringToFront();
-                this.pre.LoadData(this.getDataList());
-            }
-            else
-            {
-                // Window is Not Open, Create it and Open it.
-                this.pre = new PreviewWindow(this);
-                this.pre.BringToFront();
-                this.pre.Show();
-                this.pre.LoadData(this.getDataList());
-            }
-        }
-
-        public void ClosePreveiw() {
-            this.setStatus("Closed Preview Window");
-            this.pre.Hide();
-            this.pre.Dispose();
-            this.pre = null;
-        }
-
-        public void ApplyRenameProcess()
-        {
-            this.ClosePreveiw();
-
-            foreach(FileChanges file in this.getDataList().ToArray())
-            {
-
-                this.setStatus("Renaming " + file.BeforeName + " to " + file.AfterName);
-
-                if (File.Exists(file.Before) == false)
+                Match m = Regex.Match(filename, regexFind.Text);
+                if (m.Success != true)
                 {
-                    this.errLog.Add("Skip due to the File does not exist since the last file scan!");
+                    changes.Add(filePath, "");
                     continue;
                 }
 
-                if (file.Before == file.After)
-                {
-                    this.errLog.Add("Skip due to the Names being the Same!");
-                    continue;
-                }
+                string fileNew = Regex.Replace(filename, this.regexFind.Text, this.outputReplacement.Text);
+                string filePathNew = filePath.Replace(filename, "") + fileNew;
 
-                try
-                {
-                    // Catch for Failed to Move file.
-                    File.Move(file.Before, file.After);
-                }
-                catch (Exception e)
-                {
-                    failedToMove++;
-                    this.errLog.Add("Can not Move file, It may be in use!");
-                    this.errLog.Add("    " + file.Before);
-                }
-                
+                changes.Add(filePath, filePathNew);
             }
-            this.setStatus("Completed the Rename Process");
 
-            MessageBox.Show("Files have been Renamed. Process is Done!");
+            return changes;
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -291,6 +216,51 @@ namespace File_MagicRename
             this.evt.Hide();
             this.evt.Dispose();
             this.evt = null;
+        }
+
+        private void includeSubDir_CheckedChanged(object sender, EventArgs e)
+        {
+            this.loadFiles();
+        }
+
+        private void previewWindowOpen_Click(object sender, EventArgs e)
+        {
+            this.renderFileToTable();
+        }
+
+        private void apply_Click(object sender, EventArgs e)
+        {
+            foreach (KeyValuePair<string, string> entry in this.getFileRegexName())
+            {
+                if (File.Exists(entry.Key) == false)
+                {
+                    this.errLog.Add("Skip due to the File does not exist since the last file scan!");
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(entry.Value))
+                {
+                    this.errLog.Add("Skip due to the Names being the Same!");
+                    continue;
+                }
+
+                try
+                {
+                    // Catch for Failed to Move file.
+                    File.Move(entry.Key, entry.Value);
+                }
+                catch (Exception err)
+                {
+                    failedToMove++;
+                    this.errLog.Add("Can not Move file, It may be in use!");
+                    this.errLog.Add("    " + entry.Key);
+                    this.errLog.Add("    " + err.Message);
+                }
+
+            }
+            this.setStatus("Completed the Rename Process");
+
+            MessageBox.Show("Files have been Renamed. Process is Done!");
         }
     }
 
