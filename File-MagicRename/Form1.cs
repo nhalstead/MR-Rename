@@ -231,11 +231,13 @@ namespace File_MagicRename
         private void apply_Click(object sender, EventArgs e)
         {
             Dictionary<string, string> entries = this.getFileRegexName();
+            this.renameProgress.Value = 0;
             this.renameProgress.Maximum = entries.Count();
 
             foreach (KeyValuePair<string, string> entry in entries)
             {
                 this.renameProgress.Value = this.renameProgress.Value + 1;
+
                 if (File.Exists(entry.Key) == false)
                 {
                     this.errLog.Add("Skip due to the File does not exist since the last file scan!");
