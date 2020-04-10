@@ -36,7 +36,6 @@
             this.regexFind = new System.Windows.Forms.TextBox();
             this.dirSelected = new System.Windows.Forms.Label();
             this.renameProgress = new System.Windows.Forms.ProgressBar();
-            this.renameProgressLable = new System.Windows.Forms.Label();
             this.includeSubDir = new System.Windows.Forms.CheckBox();
             this.status = new System.Windows.Forms.Label();
             this.openEventLog = new System.Windows.Forms.Button();
@@ -117,21 +116,10 @@
             // 
             this.renameProgress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.renameProgress.Location = new System.Drawing.Point(47, 653);
+            this.renameProgress.Location = new System.Drawing.Point(68, 650);
             this.renameProgress.Name = "renameProgress";
             this.renameProgress.Size = new System.Drawing.Size(439, 23);
             this.renameProgress.TabIndex = 16;
-            // 
-            // renameProgressLable
-            // 
-            this.renameProgressLable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.renameProgressLable.AutoSize = true;
-            this.renameProgressLable.Location = new System.Drawing.Point(14, 659);
-            this.renameProgressLable.Name = "renameProgressLable";
-            this.renameProgressLable.Size = new System.Drawing.Size(30, 13);
-            this.renameProgressLable.TabIndex = 17;
-            this.renameProgressLable.Text = "0 / 0";
             // 
             // includeSubDir
             // 
@@ -257,7 +245,6 @@
             this.Controls.Add(this.openEventLog);
             this.Controls.Add(this.status);
             this.Controls.Add(this.includeSubDir);
-            this.Controls.Add(this.renameProgressLable);
             this.Controls.Add(this.renameProgress);
             this.Controls.Add(this.dirSelected);
             this.Controls.Add(this.regexFind);
@@ -286,7 +273,6 @@
         private System.Windows.Forms.TextBox regexFind;
         private System.Windows.Forms.Label dirSelected;
         private System.Windows.Forms.ProgressBar renameProgress;
-        private System.Windows.Forms.Label renameProgressLable;
         private System.Windows.Forms.CheckBox includeSubDir;
         private System.Windows.Forms.Label status;
         private System.Windows.Forms.Button openEventLog;
